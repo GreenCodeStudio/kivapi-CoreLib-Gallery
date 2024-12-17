@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<package>
+    <vendor>CoreLib</vendor>
+    <name>Gallery</name>
+    <description>
+        Simplest photo gallery
+    </description>
+    <git>https://github.com/GreenCodeStudio/kivapi-CoreLib-Gallery</git>
+    <version>0.1.0</version>
+</package>

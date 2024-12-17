@@ -1,0 +1,7 @@
+<div class="gallery">
+<:foreach collection=images item=image >
+    <div class="gallery-item" data-sizes=image.sizes data-i=image.i>
+        <img src=image.src srcset=image.srcset />
+    </div>
+</:foreach>
+</div>
