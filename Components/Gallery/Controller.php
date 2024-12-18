@@ -1,6 +1,6 @@
 <?php
 
-namespace Page\Components\Gallery;
+namespace CoreLib\Gallery\Components\Gallery;
 
 use Core\ComponentManager\ComponentController;
 use Core\ComponentManager\ComponentManager;
@@ -8,15 +8,21 @@ use MKrawczyk\FunQuery\FunQuery;
 
 class Controller extends ComponentController
 {
+    public array $images;
+
     public function __construct($params)
     {
+        parent::__construct();
         $this->params = $params;
     }
 
     public static function DefinedParameters()
     {
         return [
-            'photos' => ['type' => 'imagesArray']
+            'photos' => ['type' => 'imagesArray'],
+            'mode' => ['type' => 'enum', 'values' => ['slider', 'grid'], 'default' => 'grid'],
+            'designedWidth' => ['type' => 'int', 'default' => 240],
+            'designedHeight' => ['type' => 'int', 'default' => 240],
         ];
     }
 
@@ -26,6 +32,8 @@ class Controller extends ComponentController
         foreach ($this->params->photos as $i => $photo) {
             $ratio = $photo->imageWidth / $photo->imageHeight;
             $sizes = [];
+            $designedWidth=$this->params->designedWidth??1;
+            $designedHeight=$this->params->designedHeight??1;
             for ($scale = 1; $scale < 64; $scale *= 2) {
                 $width = round($photo->imageWidth / $scale);
                 $height = round($photo->imageHeight / $scale);
@@ -33,11 +41,11 @@ class Controller extends ComponentController
                 $sizes[] = ['width' => $width, 'height' => $height, 'src' => $photo->getSizedUrl($width, $height)];
             }
             if ($ratio < 1) {
-                $src = $photo->getSizedUrl(208, round(208 / $ratio));
-                $srcset = $photo->getSrcSet(208, round(208 / $ratio));
+                $src = $photo->getSizedUrl($designedWidth, round($designedHeight / $ratio));
+                $srcset = $photo->getSrcSet($designedWidth, round($designedHeight / $ratio));
             } else {
-                $src = $photo->getSizedUrl(round(208 * $ratio), 208);
-                $srcset = $photo->getSrcSet(round(208 * $ratio), 208);
+                $src = $photo->getSizedUrl(round($designedWidth * $ratio), $designedHeight);
+                $srcset = $photo->getSrcSet(round($designedWidth * $ratio), $designedHeight);
             }
             $ret[] = [
                 'src' => $src,

@@ -1,4 +1,4 @@
-<div class="gallery">
+<div class=("gallery gallery-":params.mode)>
 <:foreach collection=images item=image >
     <div class="gallery-item" data-sizes=image.sizes data-i=image.i>
         <img src=image.src srcset=image.srcset />
