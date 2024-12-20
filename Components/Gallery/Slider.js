@@ -18,19 +18,23 @@ export class Slider {
         });
         if (buttons) {
             buttons.querySelector(".back").onclick = (e) => {
-                this.positionStatic--;
-                if (this.positionStatic < this.minPosition) this.positionStatic = this.minPosition;
-                this.positionDynamicUpdated = new Date();
-                this.slide();
+                this.goBy(-1);
             };
             buttons.querySelector(".next").onclick = (e) => {
-                this.positionStatic++;
-                if (this.positionStatic > this.maxPosition) this.positionStatic = this.maxPosition;
-                this.positionDynamicUpdated = new Date();
-                this.slide();
+                this.goBy(1);
             };
         }
         addEventListener("resize", () => this.redraw());
+    }
+    goTo(position) {
+        this.positionStatic=position;
+        if (this.positionStatic < this.minPosition) this.positionStatic = this.minPosition;
+        if (this.positionStatic > this.maxPosition) this.positionStatic = this.maxPosition;
+        this.positionDynamicUpdated = new Date();
+        this.slide();
+    }
+    goBy(delta) {
+        this.goTo(this.positionStatic+delta);
     }
 
     get maxPosition() {
@@ -180,6 +184,9 @@ export class Slider {
         y = Math.abs(y) * Math.sign(x);
         if (Math.sign(x) == Math.sign(x - y)) return x - y;
         else return 0;
+    }
+    get countVisible() {
+        return 1;
     }
 }
 

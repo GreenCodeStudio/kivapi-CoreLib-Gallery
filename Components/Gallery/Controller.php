@@ -23,6 +23,7 @@ class Controller extends ComponentController
             'mode' => ['type' => 'enum', 'values' => ['slider', 'grid'], 'default' => 'grid'],
             'designedWidth' => ['type' => 'int', 'default' => 240],
             'designedHeight' => ['type' => 'int', 'default' => 240],
+            'sliderAutoPlay' => ['type' => 'float', 'default' => 0],
         ];
     }
 
@@ -34,18 +35,19 @@ class Controller extends ComponentController
             $sizes = [];
             $designedWidth=$this->params->designedWidth??1;
             $designedHeight=$this->params->designedHeight??1;
+            $designedRatio = $designedWidth / $designedHeight;
             for ($scale = 1; $scale < 64; $scale *= 2) {
                 $width = round($photo->imageWidth / $scale);
                 $height = round($photo->imageHeight / $scale);
                 if ($width < 320 && $height < 320) break;
                 $sizes[] = ['width' => $width, 'height' => $height, 'src' => $photo->getSizedUrl($width, $height)];
             }
-            if ($ratio < 1) {
-                $src = $photo->getSizedUrl($designedWidth, round($designedHeight / $ratio));
-                $srcset = $photo->getSrcSet($designedWidth, round($designedHeight / $ratio));
+            if ($ratio > $designedRatio) {
+                $src = $photo->getSizedUrl($designedWidth, round($designedWidth * $ratio));
+                $srcset = $photo->getSrcSet($designedWidth, round($designedWidth * $ratio));
             } else {
-                $src = $photo->getSizedUrl(round($designedWidth * $ratio), $designedHeight);
-                $srcset = $photo->getSrcSet(round($designedWidth * $ratio), $designedHeight);
+                $src = $photo->getSizedUrl(round($designedHeight * $ratio), $designedHeight);
+                $srcset = $photo->getSrcSet(round($designedHeight * $ratio), $designedHeight);
             }
             $ret[] = [
                 'src' => $src,
@@ -62,5 +64,9 @@ class Controller extends ComponentController
     {
         $this->images = $this->getImages();
         $this->loadMPTS(__DIR__."/View.mpts");
+    }
+    public function getFrontendData()
+    {
+        return ['sliderAutoPlay' => $this->params->sliderAutoPlay];
     }
 }

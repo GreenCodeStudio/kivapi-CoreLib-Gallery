@@ -8,6 +8,14 @@ export default class {
             params.domElement.querySelectorAll('.gallery-item').forEach(x => x.addEventListener('click', () => this.openGallery(x)))
         } else if (params.domElement.classList.contains('gallery-slider')) {
             const slider = new Slider(params.domElement);
+            if (params.frontendData.sliderAutoPlay) {
+                setInterval(() => {
+                    if (slider.positionStatic == slider.maxPosition)
+                        slider.goTo(0)
+                    else
+                        slider.goBy(1);
+                }, params.frontendData.sliderAutoPlay * 1000);
+            }
         }
     }
 
