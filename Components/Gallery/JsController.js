@@ -1,5 +1,7 @@
 import {GalleryViewer} from "./GalleryViewer";
 import {Slider} from "./Slider";
+import {InfiniteSlider} from "./InfiniteSlider";
+import {ButtonsAll} from "./ButtonsAll";
 
 export default class {
     constructor(params) {
@@ -7,7 +9,8 @@ export default class {
         if (params.domElement.classList.contains('gallery-grid')) {
             params.domElement.querySelectorAll('.gallery-item').forEach(x => x.addEventListener('click', () => this.openGallery(x)))
         } else if (params.domElement.classList.contains('gallery-slider')) {
-            const slider = new Slider(params.domElement);
+            const slider = new InfiniteSlider(params.domElement.querySelector('.gellery-items'));
+            params.domElement.append(slider.createPlugin(ButtonsAll).html);
             if (params.frontendData.sliderAutoPlay) {
                 setInterval(() => {
                     if (slider.positionStatic == slider.maxPosition)

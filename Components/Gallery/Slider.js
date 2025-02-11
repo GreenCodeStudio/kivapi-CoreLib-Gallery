@@ -12,6 +12,7 @@ export class Slider {
         this.velocity = 0;
         this.basicFriction = 1e-6;
         this.currentFriction = 1e-6;
+        this.plugins = [];
         // this.lastSlide = null;
         html.addEventListener("pointerdown", (e) => {
             this.pointerdown(e);
@@ -26,19 +27,29 @@ export class Slider {
         }
         addEventListener("resize", () => this.redraw());
     }
+
     goTo(position) {
-        this.positionStatic=position;
+        console.log('goto', position);
+        this.positionStatic = position;
         if (this.positionStatic < this.minPosition) this.positionStatic = this.minPosition;
         if (this.positionStatic > this.maxPosition) this.positionStatic = this.maxPosition;
         this.positionDynamicUpdated = new Date();
         this.slide();
     }
+
+    goToLogical(position) {
+        this.goTo(position);
+    }
     goBy(delta) {
-        this.goTo(this.positionStatic+delta);
+        this.goTo(this.positionStatic + delta);
     }
 
     get maxPosition() {
-        return this.html.children.length - 1;
+        return this.countItems - 1;
+    }
+
+    get countItems() {
+        return this.html.children.length;
     }
 
     get minPosition() {
@@ -105,26 +116,29 @@ export class Slider {
         this.html.style.setProperty("--sliderGlobalPosition", this.positionDynamic);
         for (let i = 0; i < this.html.childElementCount; i++) {
             let item = this.html.children[i];
-            let pos = this.positionDynamic - i;
-            item.style.setProperty("--sliderPosition", pos);
-            let visibility = 0;
-            if (pos > 0) visibility = 1 - pos;
-            else if (pos > -this.countVisible + 1) visibility = 1;
-            else visibility = this.countVisible + pos;
-            item.style.setProperty("--sliderVisibility", visibility);
-
-            item.classList.toggle("sliderActive", Math.abs(pos) < 1);
-            item.classList.toggle("slider-positive", pos >= 0);
-            item.classList.toggle("slider-negative", pos < 0);
+            this.redrawItem(item, i)
         }
-        this.buttons
-            ?.querySelector(".back")
-            ?.classList.toggle("isActive", this.positionStatic > this.minPosition);
-        this.buttons
-            ?.querySelector(".next")
-            ?.classList.toggle("isActive", this.positionStatic < this.maxPosition);
+        this.plugins.forEach(plugin => plugin.redraw());
 
         if (this.drawedCallback) this.drawedCallback(this.positionDynamic, this.maxPosition);
+    }
+
+    calcDistance(to) {
+        return this.positionDynamic - to;
+    }
+
+    redrawItem(item, i) {
+        let pos = this.calcDistance(i);
+        item.style.setProperty("--sliderPosition", pos);
+        let visibility = 0;
+        if (pos > 0) visibility = 1 - pos;
+        else if (pos > -this.countVisible + 1) visibility = 1;
+        else visibility = this.countVisible + pos;
+        item.style.setProperty("--sliderVisibility", visibility);
+
+        item.classList.toggle("sliderActive", Math.abs(pos) < 1);
+        item.classList.toggle("slider-positive", pos >= 0);
+        item.classList.toggle("slider-negative", pos < 0);
     }
 
     slideCalc() {
@@ -185,8 +199,15 @@ export class Slider {
         if (Math.sign(x) == Math.sign(x - y)) return x - y;
         else return 0;
     }
+
     get countVisible() {
         return 1;
+    }
+
+    createPlugin(pluginClass) {
+        const obj = new pluginClass(this);
+        this.plugins.push(obj);
+        return obj;
     }
 }
 
