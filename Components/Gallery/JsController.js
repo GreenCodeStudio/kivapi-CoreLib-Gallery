@@ -13,10 +13,12 @@ export default class {
             params.domElement.append(slider.createPlugin(ButtonsAll).html);
             if (params.frontendData.sliderAutoPlay) {
                 setInterval(() => {
-                    if (slider.positionStatic == slider.maxPosition)
-                        slider.goTo(0)
-                    else
-                        slider.goBy(1);
+                    if(document.visibilityState == 'visible') {
+                        if (slider.positionStatic == slider.maxPosition)
+                            slider.goTo(0)
+                        else
+                            slider.goBy(1);
+                    }
                 }, params.frontendData.sliderAutoPlay * 1000);
             }
         }
