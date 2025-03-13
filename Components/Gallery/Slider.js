@@ -29,7 +29,6 @@ export class Slider {
     }
 
     goTo(position) {
-        console.log('goto', position);
         this.positionStatic = position;
         if (this.positionStatic < this.minPosition) this.positionStatic = this.minPosition;
         if (this.positionStatic > this.maxPosition) this.positionStatic = this.maxPosition;

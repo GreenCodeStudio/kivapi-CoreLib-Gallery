@@ -1,7 +1,7 @@
 <div class=("gallery gallery-":params.mode)>
 <div class="gellery-items">
 <:foreach collection=images item=image >
-    <div class="gallery-item" data-sizes=image.sizes data-i=image.i>
+    <div class="gallery-item" data-sizes=image.sizes data-i=image.i style=("--sliderPosition: ":image.i:"; --sliderVisibility: 1;")>
         <img src=image.src srcset=image.srcset />
     </div>
 </:foreach>

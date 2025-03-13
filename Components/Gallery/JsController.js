@@ -5,7 +5,6 @@ import {ButtonsAll} from "./ButtonsAll";
 
 export default class {
     constructor(params) {
-        console.log('gallery', params)
         if (params.domElement.classList.contains('gallery-grid')) {
             params.domElement.querySelectorAll('.gallery-item').forEach(x => x.addEventListener('click', () => this.openGallery(x)))
         } else if (params.domElement.classList.contains('gallery-slider')) {
@@ -13,7 +12,9 @@ export default class {
             params.domElement.append(slider.createPlugin(ButtonsAll).html);
             if (params.frontendData.sliderAutoPlay) {
                 setInterval(() => {
-                    if(document.visibilityState == 'visible') {
+                    if (new Date() - slider.positionDynamicUpdated < params.frontendData.sliderAutoPlay * 1000 / 2)
+                        return;
+                    if (document.visibilityState == 'visible') {
                         if (slider.positionStatic == slider.maxPosition)
                             slider.goTo(0)
                         else
